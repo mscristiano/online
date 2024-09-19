@@ -31,40 +31,27 @@
     <script>
         function highlightText(element, text) {
             var innerHTML = element.innerHTML;
-            var index = innerHTML.toUpperCase().indexOf(text.toUpperCase());
-            if (index >= 0) {
-                innerHTML = innerHTML.substring(0, index) + "<mark>" + innerHTML.substring(index, index + text.length) + "</mark>" + innerHTML.substring(index + text.length);
-                element.innerHTML = innerHTML;
-            }
+            var regex = new RegExp(text, "gi");
+            innerHTML = innerHTML.replace(regex, function(matched) { return "<mark>" + matched + "</mark>"; });
+            element.innerHTML = innerHTML;
         }
 
-        function searchByArtist() {
-            var input, filter, cards, cardContainer, title, i;
-            input = document.getElementById("searchArtist");
+        function searchSongs() {
+            var input, filter, cards, cardContainer, title, content, i;
+            input = document.getElementById("searchInput");
             filter = input.value.toUpperCase();
             cardContainer = document.getElementById("cardContainer");
             cards = cardContainer.getElementsByClassName("card");
             for (i = 0; i < cards.length; i++) {
                 title = cards[i].getElementsByClassName("card-title")[0];
-                if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+                content = cards[i].getElementsByClassName("card-content")[0];
+                title.innerHTML = title.innerHTML.replace(/<mark>|<\/mark>/g, ""); // Remove previous highlights
+                content.innerHTML = content.innerHTML.replace(/<mark>|<\/mark>/g, ""); // Remove previous highlights
+                if (filter === "") {
+                    cards[i].style.display = ""; // Show all cards if filter is empty
+                } else if (title.innerText.toUpperCase().indexOf(filter) > -1 || content.innerText.toUpperCase().indexOf(filter) > -1) {
                     cards[i].style.display = "";
                     highlightText(title, input.value);
-                } else {
-                    cards[i].style.display = "none";
-                }
-            }
-        }
-
-        function searchByTitle() {
-            var input, filter, cards, cardContainer, content, i, j;
-            input = document.getElementById("searchTitle");
-            filter = input.value.toUpperCase();
-            cardContainer = document.getElementById("cardContainer");
-            cards = cardContainer.getElementsByClassName("card");
-            for (i = 0; i < cards.length; i++) {
-                content = cards[i].getElementsByClassName("card-content")[0];
-                if (content.innerText.toUpperCase().indexOf(filter) > -1) {
-                    cards[i].style.display = "";
                     highlightText(content, input.value);
                 } else {
                     cards[i].style.display = "none";
@@ -76,8 +63,7 @@
 <body>
     <h1>Lista de Músicas de Karaokê</h1>
     <div class="search-container">
-        <input type="text" id="searchArtist" onkeyup="searchByArtist()" placeholder="Buscar por artista..." class="search-input">
-        <input type="text" id="searchTitle" onkeyup="searchByTitle()" placeholder="Buscar por título..." class="search-input">
+        <input type="text" id="searchInput" onkeyup="searchSongs()" placeholder="Buscar por artista ou título..." class="search-input">
     </div>
     <div class="summary">
         Total de Músicas: 193<br>
