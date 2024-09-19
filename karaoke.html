@@ -21,8 +21,23 @@
         .card-title { font-weight: bold; }
         .card-content { margin-left: 10px; }
         .footer { margin-top: 20px; font-size: 0.9em; color: #666; }
+        @media (max-width: 600px) {
+            .search-input { width: 100%; margin-bottom: 10px; }
+            .card { padding: 5px; }
+            .card-title { font-size: 1.2em; }
+            .card-content { margin-left: 5px; }
+        }
     </style>
     <script>
+        function highlightText(element, text) {
+            var innerHTML = element.innerHTML;
+            var index = innerHTML.toUpperCase().indexOf(text.toUpperCase());
+            if (index >= 0) {
+                innerHTML = innerHTML.substring(0, index) + "<mark>" + innerHTML.substring(index, index + text.length) + "</mark>" + innerHTML.substring(index + text.length);
+                element.innerHTML = innerHTML;
+            }
+        }
+
         function searchByArtist() {
             var input, filter, cards, cardContainer, title, i;
             input = document.getElementById("searchArtist");
@@ -33,6 +48,7 @@
                 title = cards[i].getElementsByClassName("card-title")[0];
                 if (title.innerText.toUpperCase().indexOf(filter) > -1) {
                     cards[i].style.display = "";
+                    highlightText(title, input.value);
                 } else {
                     cards[i].style.display = "none";
                 }
@@ -49,6 +65,7 @@
                 content = cards[i].getElementsByClassName("card-content")[0];
                 if (content.innerText.toUpperCase().indexOf(filter) > -1) {
                     cards[i].style.display = "";
+                    highlightText(content, input.value);
                 } else {
                     cards[i].style.display = "none";
                 }
